@@ -1,0 +1,36 @@
+[project]
+name = "chatcloset"
+version = "1.0.0"
+description = "ClothStore: a read-only clothing catalogue (FastAPI + MongoDB)."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Abhishek Tiwari", email = "abhishek.tiwari.nitrr@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi==0.143.0",
+    "uvicorn==0.54.0",
+    "pymongo==4.18.3",
+    "python-dotenv==1.2.4",
+    "openai>=3.28.0",
+]
+
+
+[build-system]
+requires = [
+    "setuptools>=84,<86"
+]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "httpx==0.28.1",
+    "mongomock==4.3.0",
+]
+
+[tool.setuptools]
+py-modules = ["main"]
+packages = ["backend", "backend.routes"]

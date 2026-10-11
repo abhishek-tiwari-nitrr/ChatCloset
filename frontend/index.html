@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClothStore</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👕</text></svg>" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+    <header id="header">
+        <div class="container header-inner">
+            <a href="#" class="logo">Cloth<span>Store</span></a>
+            <nav class="nav">
+                <a href="#" data-category="">All</a>
+                <a href="#men" data-category="men">Men</a>
+                <a href="#women" data-category="women">Women</a>
+                <a href="#kids" data-category="kids">Kids</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <section class="toolbar">
+            <h2 id="title">All products</h2>
+            <form id="filters" class="filters">
+                <select name="price" aria-label="Price">
+                    <option value="">Any price</option>
+                    <option value="0-999">Under ₹1,000</option>
+                    <option value="1000-2499">₹1,000 – ₹2,499</option>
+                    <option value="2500-">₹2,500 and above</option>
+                </select>
+            </form>
+        </section>
+        <p id="count" class="muted"></p>
+        <div id="grid" class="grid"></div>
+    </main>
+    <script type="module" src="/js/app.js"></script>
+</body>
+
+</html>
