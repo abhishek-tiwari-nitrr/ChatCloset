@@ -1,6 +1,6 @@
 [project]
 name = "chatcloset"
-version = "1.0.0"
+version = "0.1.0"
 description = "ClothStore: a read-only clothing catalogue (FastAPI + MongoDB)."
 readme = "README.md"
 license = "Apache-2.0"
