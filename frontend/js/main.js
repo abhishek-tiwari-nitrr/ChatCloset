@@ -1,13 +1,14 @@
 import { api } from './api.js';
 import { renderHeader, updateCartCount } from './components/header.js';
+import { mountChatbot } from './components/chatbot.js';
 import { router } from './router.js';
 import { toast } from './ui.js';
 
 renderHeader();
+mountChatbot();
 window.addEventListener('hashchange', router);
 router();
 api.getCart().then((cart) => updateCartCount(cart.count)).catch(() => { });
-
 
 document.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-add]');

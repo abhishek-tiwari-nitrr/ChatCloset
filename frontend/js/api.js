@@ -23,6 +23,7 @@ function query(params) {
 }
 
 const json = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+const admin = (method, body) => ({ method, body, headers: { 'X-Admin-Key': state.adminKey } });
 
 export const api = {
     listProducts: (params) => request(`/products?${query(params)}`),
@@ -34,8 +35,9 @@ export const api = {
         request(`/cart/${state.sessionId}/items`, json('PUT', { product_id: productId, size, quantity })),
     checkout: () => request(`/orders/${state.sessionId}/checkout`, { method: 'POST' }),
     listOrders: () => request(`/orders/${state.sessionId}`),
-    createProduct: (form) => request('/products', { method: 'POST', body: form }),
-    updateProduct: (id, form) => request(`/products/${encodeURIComponent(id)}`, { method: 'PUT', body: form }),
-    deleteProduct: (id) => request(`/products/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-    resetDemo: () => request('/products/reset-demo', { method: 'POST' }),
+    createProduct: (form) => request('/products', admin('POST', form)),
+    updateProduct: (id, form) => request(`/products/${encodeURIComponent(id)}`, admin('PUT', form)),
+    deleteProduct: (id) => request(`/products/${encodeURIComponent(id)}`, admin('DELETE')),
+    resetDemo: () => request('/products/reset-demo', admin('POST')),
+    chat: (message) => request('/chat', json('POST', { message })),
 };

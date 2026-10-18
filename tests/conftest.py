@@ -1,4 +1,10 @@
 """Shared test setup."""
+
+import os
+
+os.environ["LLM_MODEL"] = "off"  # tests must never call a real LLM
+os.environ["ADMIN_API_KEY"] = "test-key"  # must be set BEFORE `from main import app`
+
 import mongomock
 import pytest
 from fastapi.testclient import TestClient

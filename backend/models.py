@@ -67,3 +67,12 @@ class Order(BaseModel):
     total: int
     status: str
     created_at: datetime
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=3, max_length=500)
+
+
+class ChatResponse(BaseModel):
+    reply: str
+    products: list[Product]

@@ -1,7 +1,7 @@
 [project]
 name = "chatcloset"
-version = "0.2.0"
-description = "ClothStore: catalogue + search, cart, checkout, orders and admin (FastAPI + MongoDB)."
+version = "1.0.0"
+description = "ClothStore: an AI-assisted clothing store that runs entirely on machine (FastAPI + MongoDB + Pydantic AI)."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -14,9 +14,9 @@ dependencies = [
     "uvicorn==0.54.0",
     "pymongo==4.18.3",
     "python-dotenv==1.2.4",
-    # optional
-    # "openai>=3.28.0",
-    "python-multipart==0.0.32"
+    "python-multipart==0.0.32",
+    "pydantic-ai-slim[groq,openai]==2.55.0",
+    "ipykernel>=7.4.0",
 ]
 
 

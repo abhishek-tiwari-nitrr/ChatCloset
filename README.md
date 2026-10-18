@@ -4,9 +4,8 @@
 
 ![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.143-009688?logo=fastapi&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-local%20or%20Atlas-47A248?logo=mongodb&logoColor=white)
+![MongoDB](<https://img.shields.io/badge/MongoDB-local%20or%20Atlas-47A248?logo=mongodb&logoColor=white>)
 ![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)
-
 
 ---
 
@@ -18,13 +17,13 @@
 
 ## Tech stack
 
-| Layer | Technology |
-| --- | --- |
-| API | [FastAPI](https://fastapi.tiangolo.com/) & [Pydantic](https://docs.pydantic.dev/) & [uvicorn](https://www.uvicorn.org/) |
-| Database | [MongoDB](https://www.mongodb.com/) (local server or Atlas) via [pymongo](https://pymongo.readthedocs.io/) |
-| Frontend | HTML & CSS (grid) & vanilla ES modules |
-| Images | WebP photos made with the [OpenAI Image API](https://developers.openai.com/api/docs/guides/image-generation), SVG fallback |
-| Tooling | Python 3.14 & [uv](https://docs.astral.sh/uv/) & pytest & mongomock |
+| Layer    | Technology                                                                                                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| API      | [FastAPI](https://fastapi.tiangolo.com/) & [Pydantic](https://docs.pydantic.dev/) & [uvicorn](https://www.uvicorn.org/)      |
+| Database | [MongoDB](https://www.mongodb.com/) (local server or Atlas) via [pymongo](https://pymongo.readthedocs.io/)                  |
+| Frontend | HTML & CSS (grid) & vanilla ES modules                                                                                    |
+| Images   | WebP photos made with the [OpenAI Image API](https://developers.openai.com/api/docs/guides/image-generation), SVG fallback |
+| Tooling  | Python 3.14 & [uv](https://docs.astral.sh/uv/) & pytest & mongomock                                                        |
 
 ---
 
@@ -48,15 +47,15 @@ uv sync --extra dev          # or: pip install -e ".[dev]"
 
 Copy `.env.example` to `.env` and set:
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `MONGO_URI` | `mongodb://localhost:27017` | MongoDB connection string (local or `mongodb+srv://…` for Atlas) |
-| `MONGO_DB` | `clothstore` | Database name |
-| `OPENAI_API_KEY` | – | Only needed to (re)generate product photos |
+| Variable           | Default                       | Purpose                                                             |
+| ------------------ | ----------------------------- | ------------------------------------------------------------------- |
+| `MONGO_URI`      | `mongodb://localhost:27017` | MongoDB connection string (local or `mongodb+srv://…` for Atlas) |
+| `MONGO_DB`       | `clothstore`                | Database name                                                       |
+| `OPENAI_API_KEY` | –                            | Only needed to (re)generate product photos                          |
 
 `.env` is git-ignored. Never commit real credentials.
 
-### Run
+### Runuv sync 
 
 ```bash
 uv run python main.py
@@ -70,11 +69,11 @@ Open **http://127.0.0.1:8000** for the storefront, or **http://127.0.0.1:8000/do
 
 `GET /api/products`
 
-| Query parameter | Type | Example |
-| --- | --- | --- |
-| `category` | `men` · `women` · `kids` | `?category=women` |
-| `min_price` | integer ≥ 0 (₹) | `?min_price=1000` |
-| `max_price` | integer ≥ 0 (₹) | `?max_price=2499` |
+| Query parameter | Type                             | Example             |
+| --------------- | -------------------------------- | ------------------- |
+| `category`    | `men` · `women` · `kids` | `?category=women` |
+| `min_price`   | integer ≥ 0 (₹)                | `?min_price=1000` |
+| `max_price`   | integer ≥ 0 (₹)                | `?max_price=2499` |
 
 ```http
 GET /api/products?category=kids&max_price=999

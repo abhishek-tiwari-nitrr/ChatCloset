@@ -13,9 +13,11 @@ from pymongo.database import Database
 from backend import config
 from backend.database import get_db, serialize, to_object_id
 from backend.models import Category, Product, ProductPage
+from backend.security import require_admin
 from backend.seed import demo_products, placeholder_image
 
 router = APIRouter(prefix="/api/products", tags=["products"])
+admin_only = [Depends(require_admin)]
 SORTS = {"newest": ("_id", -1), "price_asc": ("price", 1), "price_desc": ("price", -1)}
 
 
@@ -127,7 +129,7 @@ async def save_image(image: UploadFile) -> str:
     return f"/uploads/{filename}"
 
 
-@router.post("", response_model=Product, status_code=201)
+@router.post("", response_model=Product, status_code=201, dependencies=admin_only)
 async def create_product(
     fields: dict = Depends(product_form),
     image: UploadFile | None = File(None),
@@ -142,7 +144,7 @@ async def create_product(
     return serialize(fields)
 
 
-@router.put("/{product_id}", response_model=Product)
+@router.put("/{product_id}", response_model=Product, dependencies=admin_only)
 async def update_product(
     product_id: str,
     fields: dict = Depends(product_form),
@@ -162,14 +164,14 @@ async def update_product(
     return serialize(product)
 
 
-@router.delete("/{product_id}", status_code=204)
+@router.delete("/{product_id}", status_code=204, dependencies=admin_only)
 def delete_product(product_id: str, db: Database = Depends(get_db)):
     """Remove a product from the catalogue."""
     if db.products.delete_one({"_id": to_object_id(product_id)}).deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
 
 
-@router.post("/reset-demo")
+@router.post("/reset-demo", dependencies=admin_only)
 def reset_demo(db: Database = Depends(get_db)):
     """Wipe the catalogue and refill it with fresh demo products."""
     db.products.delete_many({})

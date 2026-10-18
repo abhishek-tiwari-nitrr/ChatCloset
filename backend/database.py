@@ -3,7 +3,7 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import HTTPException
-from pymongo import MongoClient
+from pymongo import ASCENDING, DESCENDING, MongoClient
 from pymongo.database import Database
 
 from backend import config
@@ -29,3 +29,15 @@ def to_object_id(value: str) -> ObjectId:
         return ObjectId(value)
     except InvalidId:
         raise HTTPException(status_code=404, detail="Product not found") from None
+
+
+def create_indexed(database: Database) -> None:
+    """Indexes keeps filters fast and block duplicate cart lines."""
+    database.product.create_index([("category", ASCENDING), ("price", ASCENDING)])
+    database.cart.create_index(
+        [("session_id", ASCENDING), ("product_id", ASCENDING), ("size", ASCENDING)],
+        unique=True,
+    )
+    database.orders.create_index(
+        [("session_id", ASCENDING), ("created_at", DESCENDING)]
+    )

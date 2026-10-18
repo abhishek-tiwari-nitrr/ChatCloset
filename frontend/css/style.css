@@ -764,3 +764,136 @@ textarea:focus {
         position: static;
     }
 }
+
+/* ===== 15. AI chatbot ===== */
+.chat-toggle {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 40;
+    width: 60px;
+    height: 60px;
+    font-size: 1.6rem;
+    color: #fff;
+    background: var(--primary);
+    border: none;
+    border-radius: 50%;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.chat-toggle:hover {
+    transform: scale(1.06);
+}
+
+.chat-panel {
+    position: fixed;
+    right: 24px;
+    bottom: 96px;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    width: min(400px, calc(100vw - 32px));
+    height: min(580px, calc(100vh - 140px));
+    background: var(--surface);
+    border-radius: 18px;
+    box-shadow: 0 12px 48px rgb(0 0 0 / 0.18);
+    overflow: hidden;
+}
+
+.chat-panel[hidden] {
+    display: none;
+}
+
+.chat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--primary);
+}
+
+.chat-head button {
+    font-size: 1rem;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.chat-log {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    overflow-y: auto;
+    background: var(--bg);
+}
+
+.msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    white-space: pre-wrap;
+}
+
+.msg.bot {
+    align-self: flex-start;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.msg.user {
+    align-self: flex-end;
+    color: #fff;
+    background: var(--primary);
+}
+
+.msg.typing {
+    color: var(--muted);
+    font-style: italic;
+}
+
+.msg.error {
+    color: var(--accent);
+}
+
+.chat-products {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.chat-products .card-body {
+    padding: 10px;
+    font-size: 0.85rem;
+}
+
+.chat-products .badge {
+    display: none;
+}
+
+.chat-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.chat-form input {
+    flex: 1;
+    min-width: 0;
+}
+
+.narrow {
+    max-width: 420px;
+    margin: 64px auto;
+}
+
+.narrow .page-title {
+    margin: 0;
+}

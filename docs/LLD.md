@@ -71,7 +71,6 @@ Base path `/api`. Errors are `{"detail": "…"}`, or `{"detail": [{loc, msg, typ
 | 10 | `POST /orders/{session_id}/checkout` | –                                                                                                                                                           | 201 `Order`            | 400, 422           |
 | 11 | `GET /orders/{session_id}`           | –                                                                                                                                                           | 200 `Order[]`          | 422                |
 
-
 ---
 
 # 3. Data model

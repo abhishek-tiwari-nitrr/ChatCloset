@@ -1,5 +1,6 @@
-// Admin page: add, edit and delete products, or reset the demo catalogue.
+// Admin page: unlock with the admin key, then add, edit, delete products or reset the demo catalogue.
 import { api } from '../api.js';
+import { state } from '../state.js';
 import { escapeHtml, formatPrice, toast } from '../ui.js';
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -8,6 +9,21 @@ let page = 1;
 
 export async function renderAdmin() {
   const app = document.getElementById('app');
+  if (!state.adminKey) {
+    app.innerHTML = `
+      <form id="unlock" class="panel form narrow">
+        <h1 class="page-title">Admin sign-in</h1>
+        <input name="key" type="password" placeholder="Admin key (ADMIN_API_KEY in .env)" required autofocus />
+        <button class="btn">Unlock</button>
+      </form>`;
+    document.getElementById('unlock').addEventListener('submit', (event) => {
+      event.preventDefault();
+      state.adminKey = new FormData(event.target).get('key');
+      renderAdmin();
+    });
+    return;
+  }
+
   const data = await api.listProducts({ page, limit: 10 });
   if (!data.items.length && page > 1) { // the last item of the last page was deleted
     page -= 1;
@@ -16,7 +32,10 @@ export async function renderAdmin() {
   app.innerHTML = `
     <div class="admin-head">
       <h1 class="page-title">Manage products</h1>
-      <button id="reset" class="btn btn-outline">Reset demo catalogue</button>
+      <div class="row-actions">
+        <button id="reset" class="btn btn-outline">Reset demo catalogue</button>
+        <button id="lock" class="btn btn-outline">Lock</button>
+      </div>
     </div>
     <form id="product-form" class="panel form">
       <h2>${editing ? 'Edit product' : 'Add a product'}</h2>
@@ -80,6 +99,10 @@ export async function renderAdmin() {
     editing = null;
     renderAdmin();
   });
+  document.getElementById('lock').addEventListener('click', () => {
+    state.adminKey = '';
+    renderAdmin();
+  });
   document.getElementById('reset').addEventListener('click', () => {
     if (confirm('Replace the whole catalogue with fresh demo products?')) run(api.resetDemo, 'Demo catalogue restored', () => { page = 1; });
   });
@@ -103,8 +126,9 @@ export async function renderAdmin() {
   });
 }
 
-// Run an admin action and show the result. On error nothing is redrawn, so the form keeps what was typed.
-async function run(action, successMessage, onSuccess = () => {}) {
+// Run an admin action and show the result. On error the form keeps what was typed,
+// except for 401 (wrong key): then the key is forgotten and the sign-in form comes back.
+async function run(action, successMessage, onSuccess = () => { }) {
   try {
     await action();
     onSuccess();
@@ -112,5 +136,9 @@ async function run(action, successMessage, onSuccess = () => {}) {
     renderAdmin();
   } catch (error) {
     toast(error.message, 'error');
+    if (error.status === 401) {
+      state.adminKey = '';
+      renderAdmin();
+    }
   }
 }

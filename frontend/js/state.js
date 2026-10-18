@@ -1,5 +1,3 @@
-// Shared browser state: who this visitor is (a random id remembered by the browser).
-
 function loadSessionId() {
   let id = localStorage.getItem('clothstore_session');
   if (!id) {
@@ -11,4 +9,11 @@ function loadSessionId() {
 
 export const state = {
   sessionId: loadSessionId(),
+  get adminKey() {
+    return sessionStorage.getItem('clothstore_admin_key') || '';
+  },
+  set adminKey(value) {
+    if (value) sessionStorage.setItem('clothstore_admin_key', value);
+    else sessionStorage.removeItem('clothstore_admin_key');
+  },
 };
