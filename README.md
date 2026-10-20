@@ -83,9 +83,7 @@ Every version has a small, focused test suite (2–5 tests) that runs against an
 
 ```bash
 pip install -r requirements-dev.txt
-pytest                      # final version (v3): health, admin key, AI assistant
-cd versions/v1 && pytest    # v1: catalogue + filters
-cd versions/v2 && pytest    # v2: search, cart, checkout, upload validation
+pytest
 ```
 
 ---
