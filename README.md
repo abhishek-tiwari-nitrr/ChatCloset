@@ -1,112 +1,94 @@
-# ChatCloset
+# ChatCloset - an AI-assisted clothing store
 
-**A clothing catalogue built with FastAPI and MongoDB: 120 products with real photos, filtered by category and price.**
+ClothStore is a full-stack e-commerce showcase: a **FastAPI** backend, a **MongoDB** database, a framework-free **JavaScript** storefront, and an **AI shopping assistant** built with **Pydantic AI** that turns plain English ("men's jackets under 3000") into a safe database search.
 
 ![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.143-009688?logo=fastapi&logoColor=white)
 ![MongoDB](<https://img.shields.io/badge/MongoDB-local%20or%20Atlas-47A248?logo=mongodb&logoColor=white>)
+![Docker](https://img.shields.io/badge/Docker-compose%20ready-2496ED?logo=docker&logoColor=white)
+![Pydantic AI](https://img.shields.io/badge/Pydantic%20AI-agents-E92063?logo=pydantic&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-LLM%20inference-F55036?logoColor=white)
 ![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)
 
 ---
 
-## Features
+## Quick start (Windows, macOS, Linux)
 
-- **Product API**: `GET /api/products` with optional `category` (`men` / `women` / `kids`), `min_price` and `max_price`. Inputs are validated (an invalid category or negative price gives `422`), and interactive docs are at `/docs`.
-- **Self-seeding catalogue**: on first start an empty database is filled with 120 deterministic demo products (40 per category, unique names, sizes, prices from ₹399 to ₹4,999).
-- **Real product photos**: 120 consistent studio-style WebP photos, generated once with the OpenAI Image API and shipped in the repository. Without them the store falls back to drawn SVG pictures, so it still works offline.
+You need **Python 3.14+** and **MongoDB** running locally.
 
-## Tech stack
+```bash
+# 1. MongoDB: install the free Community Server once (or use Docker, see below)
+#    Windows:  winget install MongoDB.Server      (starts as a Windows service)
+#    macOS:    brew tap mongodb/brew && brew install mongodb-community && brew services start mongodb-community
+#    Linux:    https://www.mongodb.com/docs/manual/administration/install-on-linux/
 
-| Layer    | Technology                                                                                                                |
-| -------- | ------------------------------------------------------------------------------------------------------------------------- |
-| API      | [FastAPI](https://fastapi.tiangolo.com/) & [Pydantic](https://docs.pydantic.dev/) & [uvicorn](https://www.uvicorn.org/)      |
-| Database | [MongoDB](https://www.mongodb.com/) (local server or Atlas) via [pymongo](https://pymongo.readthedocs.io/)                  |
-| Frontend | HTML & CSS (grid) & vanilla ES modules                                                                                    |
-| Images   | WebP photos made with the [OpenAI Image API](https://developers.openai.com/api/docs/guides/image-generation), SVG fallback |
-| Tooling  | Python 3.14 & [uv](https://docs.astral.sh/uv/) & pytest & mongomock                                                        |
+# 2. Python environment
+python -m venv .venv
+.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt   # or: pip install -e ".[dev]"   (uses pyproject.toml, also installs the test tools)
+
+# 3. Settings (all optional — defaults work)
+copy .env.example .env            # macOS/Linux: cp .env.example .env
+
+# 4. Run
+python main.py
+```
+
+Open **http://127.0.0.1:8000**. On first start the store fills itself with 120 demo products, with drawn pictures, or real photos for the 50 newest once you have [generated them](#product-photos-optional).
+
+* Admin page: **http://127.0.0.1:8000/#/admin**, unlocked with `ADMIN_API_KEY` from `.env` (default `change-me`, please change it).
+* Interactive API docs: **http://127.0.0.1:8000/docs**
+* Health check: **http://127.0.0.1:8000/api/health**
+
+### Or: one command with Docker
+
+```bash
+docker compose up --build
+```
+
+This starts MongoDB and the app together. The app is published on `127.0.0.1:8000` only, and MongoDB is not published at all.
 
 ---
 
-## Getting started
 
-### Prerequisites
+## The AI assistant
 
-- **Python 3.14+** and **[uv](https://docs.astral.sh/uv/)** (or plain `pip`)
-- **MongoDB**: either a local server (`winget install MongoDB.Server` on Windows) or a free
-  [MongoDB Atlas](https://www.mongodb.com/atlas) cluster
+Set `LLM_MODEL` in `.env` to any [Pydantic AI](https://ai.pydantic.dev/) model string:
 
-### Install
+| Mode             | `.env`                                                                      | Notes                                                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Groq (free tier) | `LLM_MODEL=groq:llama-3.3-70b-versatile` + `GROQ_API_KEY=...`             | Fast and accurate. Only the chat message is sent to Groq.                                                                  |
+| No LLM           | `LLM_MODEL=off`                                                             | Rule-based keyword search, works offline.                                                                                  |
 
-```bash
-git clone https://github.com/abhishek-tiwari-nitrr/ChatCloset.git
-cd ChatCloset
-uv sync --extra dev          # or: pip install -e ".[dev]"
-```
-
-### Configure
-
-Copy `.env.example` to `.env` and set:
-
-| Variable           | Default                       | Purpose                                                             |
-| ------------------ | ----------------------------- | ------------------------------------------------------------------- |
-| `MONGO_URI`      | `mongodb://localhost:27017` | MongoDB connection string (local or `mongodb+srv://…` for Atlas) |
-| `MONGO_DB`       | `clothstore`                | Database name                                                       |
-| `OPENAI_API_KEY` | –                            | Only needed to (re)generate product photos                          |
-
-`.env` is git-ignored. Never commit real credentials.
-
-### Runuv sync 
-
-```bash
-uv run python main.py
-```
-
-Open **http://127.0.0.1:8000** for the storefront, or **http://127.0.0.1:8000/docs** for the interactive API.
+The LLM never writes database queries. It can only call one tool, `search_products(category, keyword, min_price, max_price)`, and the backend builds an escaped MongoDB filter from those typed arguments. If the LLM is unreachable, or answers without searching even though the message clearly asks for products, the backend runs the same search using a rule-based parser.
 
 ---
 
-## API
+## Product photos (optional)
 
-`GET /api/products`
+The demo products show drawn pictures that work offline. To give the **50 newest** products real photos, which every version lists first, add `OPENAI_API_KEY` to `.env` and run the one-off generator once. It costs about **$0.25** with `gpt-image-2` at low quality:
 
-| Query parameter | Type                             | Example             |
-| --------------- | -------------------------------- | ------------------- |
-| `category`    | `men` · `women` · `kids` | `?category=women` |
-| `min_price`   | integer ≥ 0 (₹)                | `?min_price=1000` |
-| `max_price`   | integer ≥ 0 (₹)                | `?max_price=2499` |
-
-```http
-GET /api/products?category=kids&max_price=999
-
-200 OK
-[{"id": "…", "name": "Casual Mustard Frock", "description": "…", "price": 799, "category": "kids",
-  "sizes": ["M", "L", "XL", "XXL"], "colors": ["Mustard"], "image": "/images/products/casual-mustard-frock.webp"}, …]
+```bash
+python scripts/generate_product_images.py --dry-run   # preview prompts and cost, no API call
+python scripts/generate_product_images.py             # asks before spending; skips photos that exist
 ```
 
-Errors follow FastAPI's format. An invalid parameter gives `422` with a `detail` list.
+The photos are saved into `frontend/images/products/` of v1, v2 and v3. Then re-seed: Admin → **Reset demo catalogue**. Details: [product photos guide](docs/build-from-scratch/product-photos.md).
 
 ---
 
-## Product photos
+## Tests
 
-The 120 photos in `frontend/images/products/` are committed, so **you don't need an OpenAI key** to run the store. To regenerate or extend them:
+Every version has a small, focused test suite (2–5 tests) that runs against an in-memory MongoDB, so no database or LLM is needed:
 
 ```bash
-python scripts/generate_product_images.py --count 120 --dry-run   # preview prompts and cost, no API call
-python scripts/generate_product_images.py --count 120             # asks before spending; skips existing photos
+pip install -r requirements-dev.txt
+pytest                      # final version (v3): health, admin key, AI assistant
+cd versions/v1 && pytest    # v1: catalogue + filters
+cd versions/v2 && pytest    # v2: search, cart, checkout, upload validation
 ```
-
-Uses `gpt-image-2` at low quality (about $0.005 per photo). Delete a `.webp` to regenerate just that product.
 
 ---
-
-## Testing
-
-```bash
-uv run pytest -v
-```
-
-The tests replace the database with mongomock through FastAPI's `dependency_overrides`, so they need neither MongoDB nor the internet.
 
 ## Documentation
 
